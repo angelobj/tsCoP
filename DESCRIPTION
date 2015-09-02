@@ -1,0 +1,11 @@
+Package: tsCoP
+Version: 0.1
+Date: 2015-17-008
+Title: Funciones para analizar series de tiempo en CoP
+Authors@R: c(person("Angelo Bartsch", "Developer", role = c("aut", "cre"),
+  	     email = "angelo.bartsch@uv.cl"))
+Author: Angelo Bartscg [aut, cre],
+  A. User [ctb]
+Maintainer: Angelo Bartscg <angelo.bartsch@uv.cl>
+Depends: R (>= 3.1.0), quantmod,fracdiff, tseries
+Description: Permite calcular y analizar CoP como Serie de Tiempo
