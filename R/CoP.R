@@ -9,6 +9,8 @@
 #' se puede utilizar PACF, fdGPH...
 #' Función 'lllaply_d' permite diferenciar en base a parámetros de diferenciación 'd_par' obtenidos con función lllaply(x,fdGPH)
 #' Función 'lllaply_frac' permite obtener parámetros AR y MA
+#' Función 'cortar' elimina o reemplaza datos al comienzo y al final. Se debe ingresar el número de puntos o
+#' el tiempo en segundos si se entrega la frecuencia de muestro
 
 cargar<-function(i=1){
   if(is.null(i))
@@ -73,14 +75,14 @@ CoP<-function(x,freq=40){
   a<-(x[,3]+x[,4]-x[,1]-x[,2])/Peso
   b<-(x[,1]+x[,3]-x[,2]-x[,4])/Peso
   Eje_X<-(a-mean(a))
-  Eje_Y<-(b-mean(b))
+  Eje_Y<-(b-mean(b))*-1
   Velocidad_X<-diff(Eje_X)/dt
-  Velocidad_Y<-diff(Eje_Y)/dt
+  Velocidad_Y<-(diff(Eje_Y)/dt)*-1
   Aceleración_X<-diff(Velocidad_X)/dt
-  Aceleración_Y<-diff(Velocidad_Y)/dt
-  output=list(Desplazamiento=data.frame("X"=Eje_X,"Y"=Eje_Y),
-              Velocidad=data.frame("X"=Velocidad_X, "Y"=Velocidad_Y),
-              Aceleración=data.frame("X"=Aceleración_X,"Y"=Aceleración_Y))
+  Aceleración_Y<-(diff(Velocidad_Y)/dt)*-1
+  output=list(Desplazamiento=data.frame("ML"=Eje_X,"AP"=Eje_Y),
+              Velocidad=data.frame("ML"=Velocidad_X, "AP"=Velocidad_Y),
+              Aceleración=data.frame("ML"=Aceleración_X,"AP"=Aceleración_Y))
 }
 lllaply_p<-function(x,m=c(3,2),f=40,col.main="blue",type="l",...){
   if(!is.null(m))
@@ -140,8 +142,7 @@ lllaply_arima<-function(x,order){
     sapply(names(x[[i]]),USE.NAMES = TRUE,simplify=FALSE, function(d)(
       sapply(names(x[[i]][[d]]),USE.NAMES = TRUE,simplify=FALSE ,function(e){
         arima(x[[i]][[d]][[e]],order)})))))}
-#' Función para cortar datos al comienzo y al final. Se debe ingresar el número de puntos o
-#' el tiempo en segundos si se entrega la frecuencia de muestro
+
 cortar<-function(x,i=0,f=0,freq=1,r.na=F){
   if(missing(i)&&missing(f))
     stop("No hay datos a eliminar")
@@ -151,7 +152,7 @@ cortar<-function(x,i=0,f=0,freq=1,r.na=F){
   if(is.data.frame(x)){
     if(!missing(i)){
       if(!missing(f)){
-      x[-c(1:(i*freq),(dim(x)[1]-(f*freq)+1):(dim(x)[1])),] # con esta linea elimino valores
+        x[-c(1:(i*freq),(dim(x)[1]-(f*freq)+1):(dim(x)[1])),n]} # con esta linea elimino valores
       }else
       {x[-c(1:(i*freq)),]}#missing(f)
     }#missnig(i)
@@ -165,6 +166,7 @@ cortar<-function(x,i=0,f=0,freq=1,r.na=F){
     }
     else{x[-c((length(x)-(f*freq)+1):(length(x)))]}#missing(i)
   }#data.frame2
+  
   }#ra.na1
   else{
     if(is.data.frame(x)){
@@ -253,4 +255,23 @@ save.excel <-function(.list, default = 'var1', path = ''){
   createSheet(wb, names(.list))
   writeWorksheet(wb,.list, names(.list),header=FALSE)
   saveWorkbook(wb)
+}
+
+#par<-matrix(unlist(d_par),ncol=33)
+#rownames par
+#rownames(par)<-paste(paste(rep(c('Desplazamiento','Velocidad','Aceleracion'),each=6),rep(c('X','Y'),each=3)),c('d','sd.as','sd.reg'))
+#colnames(par)<-c(paste('Sujeto', 1:33, sep = " "))
+d<-matrix(NA,ncol=33,nrow=6)
+pos<-seq(from=1,to=18,by=3)
+for(i in 1:6){
+d[i,]<-par[pos[i],]
+}
+d<-t(d)
+descriptivo<-function(x){
+Media<-apply(x,mean,MARGIN=2)
+Desv.E<-apply(x,sd,MARGIN=2)
+Var<-apply(x,var,MARGIN=2)
+Shapiro<-apply(x,function(x)(shapiro.test(x)$p.value),MARGIN=2)
+KS.test<-apply(x,function(x)(ks.test(x,"pnorm",mean(x),sd(x))$p.value),MARGIN=2)
+t(data.frame("Media"=Media,"Desviacion E."=Desv.E,"Var"=Var,"Shapiro W"=Shapiro,"KS"=KS.test))
 }
