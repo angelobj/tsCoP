@@ -1,10 +1,10 @@
 #' Un script para analizar el Centro de Presión desde Cero
-#' 
+#'
 #' Se aplican funciones a listas dentro de listas
 #' Función 'cargar' permite cargar todos los archivos dentro de una carpeta (1º nivel)
 #' Función 'CoP' permite calcular el desplazamiento, velocidad y Aceleración (2º nivel), en ejes X e Y.
 #' Función 'lllaply_p' permite graficar todos los niveles en una matriz m=c(3x2)
-#' Función 'lllaply' permite aplicar FUN=fun al 3º nivel de la lista. Argumento 'plot' 
+#' Función 'lllaply' permite aplicar FUN=fun al 3º nivel de la lista. Argumento 'plot'
 #' permite graficar y guardar archivo '.EPS' donde el título y nombre de archivo comienza con fun="". ACF por defecto,
 #' se puede utilizar PACF, fdGPH...
 #' Función 'lllaply_d' permite diferenciar en base a parámetros de diferenciación 'd_par' obtenidos con función lllaply(x,fdGPH)
@@ -17,11 +17,11 @@ cargar<-function(i=1){
   if(is.null(i)) {
     i<-length(archivos) # Número de sujetos evaluados}
     x <- lapply(archivos,read.table,header=F)
-    names(x) <- paste('Sujeto', 1:i, sep = " ") 
+    names(x) <- paste('Sujeto', 1:i, sep = " ")
     output=x
   }else{
     x <- lapply(archivos[1:i],read.table,header=F)
-    names(x) <- paste('Sujeto', 1:i, sep = " ") 
+    names(x) <- paste('Sujeto', 1:i, sep = " ")
     output=x
   }}
 
@@ -39,7 +39,7 @@ cargar_tot<-function(i=1,freq=40){
   CoP<-lapply(CoP_orig, function(x){colnames(x)<-names
                                     return(x)  })
   CoP_xy<-lapply(CoP_orig,FUN=CoP) #Aplica función CoP
-  names(CoP_xy) <- paste('Sujeto', 1:i, sep = " ") 
+  names(CoP_xy) <- paste('Sujeto', 1:i, sep = " ")
   output=CoP_xy
 }else{
   CoP_orig <- lapply(archivos[1:i],read.table,header=F)
@@ -62,7 +62,7 @@ cargar_tot<-function(i=1,freq=40){
                 Aceleración=data.frame("X"=Aceleración_X,"Y"=Aceleración_Y))
   }
   ) #Aplica función CoP
-  names(CoP_xy) <- paste('Sujeto', 1:i, sep = " ") 
+  names(CoP_xy) <- paste('Sujeto', 1:i, sep = " ")
   output=CoP_xy
 }}
 CoP<-function(x,freq=40){
@@ -140,7 +140,67 @@ lllaply_arima<-function(x,order){
     sapply(names(x[[i]]),USE.NAMES = TRUE,simplify=FALSE, function(d)(
       sapply(names(x[[i]][[d]]),USE.NAMES = TRUE,simplify=FALSE ,function(e){
         arima(x[[i]][[d]][[e]],order)})))))}
-
+#' Función para cortar datos al comienzo y al final. Se debe ingresar el número de puntos o
+#' el tiempo en segundos si se entrega la frecuencia de muestro
+cortar<-function(x,i=0,f=0,freq=1,r.na=F){
+  if(missing(i)&&missing(f))
+    stop("No hay datos a eliminar")
+  if(missing(freq))
+    warning("Frecuencia por defecto son 1hz")
+  if(r.na==F){
+  if(is.data.frame(x)){
+    if(!missing(i)){
+      if(!missing(f)){
+      x[-c(1:(i*freq),(dim(x)[1]-(f*freq)+1):(dim(x)[1])),] # con esta linea elimino valores
+      }else
+      {x[-c(1:(i*freq)),]}#missing(f)
+    }#missnig(i)
+    else{x[-c((dim(x)[1]-(f*freq)+1):(dim(x)[1])),]}}#data.frame1
+  else{
+    if(!missing(i)){
+      if(!missing(f)){
+        x[-c(1:(i*freq),(length(x)-(f*freq)+1):(length(x)))]
+      }else
+      {x[-c(1:(i*freq))]}#mmissing(i)
+    }
+    else{x[-c((length(x)-(f*freq)+1):(length(x)))]}#missing(i)
+  }#data.frame2
+  }#ra.na1
+  else{
+    if(is.data.frame(x)){
+      if(!missing(i)){
+        if(!missing(f)){
+          inicio<-rep(NA,times=i*freq)
+          fin<-rep(NA,times=f*freq)
+          c(inicio,x[c((i*freq)+1):(dim(x)[1]-(f*freq)),],fin) # Con esta linea relleno con NA
+          }else
+        {
+        inicio<-rep(NA,times=i*freq)
+        c(inicio,x[c((i*freq)+1):(dim(x)[1]-(f*freq)),]) # Con esta linea relleno con NA    
+        }#missing(f)
+      }#missnig(i)
+      else{
+        fin<-rep(NA,times=f*freq)
+        c(x[c((i*freq)+1):(dim(x)[1]-(f*freq)),],fin) # Con esta linea relleno con NA
+      }}#data.frame1
+    else{
+      if(!missing(i)){
+        if(!missing(f)){
+          inicio<-rep(NA,times=i*freq)
+          fin<-rep(NA,times=f*freq)
+          c(inicio,x[c((i*freq)+1):(length(x)-(f*freq))],fin) # Con esta linea relleno con NA
+        }else
+        {
+          inicio<-rep(NA,times=i*freq)
+          c(inicio,x[c((i*freq)+1):(length(x)-(f*freq))]) # Con esta linea relleno con NA    
+        }#missing(f)
+      }#missnig(i)
+      else{
+        fin<-rep(NA,times=f*freq)
+        c(x[c((i*freq)+1):(length(x)-(f*freq))],fin) # Con esta linea relleno con NA
+      }}#data.frame2
+    }#ra.na2
+}#function
 
 # Extraer información desde modelo ajustado (residuos, coef...) luego aplicar Normalidad, ACF, PACF, etc...
 # res_d<-lllaply(par_d,FUN=acf,fun="acf")
@@ -180,9 +240,10 @@ lllaply_arima<-function(x,order){
 #dist2center <- sqrt(rowSums((t(t(z)-me))^2))
 #pi*min(dist2center)*max(dist2center)
 
+# Función para cortar los primeros y últimos 5 segundos
+#x<-(lllaply(x,FUN=cortar,fun="cortar",i=5,f=5,freq=40))
 
-  
-  
+
 save.excel <-function(.list, default = 'var1', path = ''){
   require("XLConnect")
   .name <- as.list(match.call())[2]
