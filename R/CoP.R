@@ -54,11 +54,11 @@ cargar_tot<-function(i=1,freq=40){
     a<-(x[,3]+x[,4]-x[,1]-x[,2])/Peso
     b<-(x[,1]+x[,3]-x[,2]-x[,4])/Peso
     Eje_X<-(a-mean(a))
-    Eje_Y<-(b-mean(b)))*-1
+    Eje_Y<-(b-mean(b))*(-1)
     Velocidad_X<-diff(Eje_X)/dt
-    Velocidad_Y<-diff(Eje_Y)/dt*-1
+    Velocidad_Y<-diff(Eje_Y)/dt*(-1)
     Aceleración_X<-diff(Velocidad_X)/dt
-    Aceleración_Y<-diff(Velocidad_Y)/dt*-1
+    Aceleración_Y<-diff(Velocidad_Y)/dt*(-1)
     output=list(Desplazamiento=data.frame("AP"=Eje_Y,"ML"=Eje_X),
                 Velocidad=data.frame("AP"=Velocidad_Y,"ML"=Velocidad_X),
                 Aceleración=data.frame("AP"=Aceleración_Y,"ML"=Aceleración_X))
@@ -75,11 +75,11 @@ CoP<-function(x,freq=40){
   a<-(x[,3]+x[,4]-x[,1]-x[,2])/Peso
   b<-(x[,1]+x[,3]-x[,2]-x[,4])/Peso
   Eje_X<-(a-mean(a))
-  Eje_Y<-(b-mean(b))*-1
+  Eje_Y<-(b-mean(b))*(-1)
   Velocidad_X<-diff(Eje_X)/dt
-  Velocidad_Y<-(diff(Eje_Y)/dt)*-1
+  Velocidad_Y<-(diff(Eje_Y)/dt)*(-1)
   Aceleración_X<-diff(Velocidad_X)/dt
-  Aceleración_Y<-(diff(Velocidad_Y)/dt)*-1
+  Aceleración_Y<-(diff(Velocidad_Y)/dt)*(-1)
   output=list(Desplazamiento=data.frame("AP"=Eje_Y,"ML"=Eje_X),
               Velocidad=data.frame("AP"=Velocidad_Y,"ML"=Velocidad_X),
               Aceleración=data.frame("AP"=Aceleración_Y,"ML"=Aceleración_X))
