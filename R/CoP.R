@@ -54,14 +54,14 @@ cargar_tot<-function(i=1,freq=40){
     a<-(x[,3]+x[,4]-x[,1]-x[,2])/Peso
     b<-(x[,1]+x[,3]-x[,2]-x[,4])/Peso
     Eje_X<-(a-mean(a))
-    Eje_Y<-(b-mean(b))
+    Eje_Y<-(b-mean(b)))*-1
     Velocidad_X<-diff(Eje_X)/dt
-    Velocidad_Y<-diff(Eje_Y)/dt
+    Velocidad_Y<-diff(Eje_Y)/dt*-1
     Aceleración_X<-diff(Velocidad_X)/dt
-    Aceleración_Y<-diff(Velocidad_Y)/dt
-    output=list(Desplazamiento=data.frame("X"=Eje_X,"Y"=Eje_Y),
-                Velocidad=data.frame("X"=Velocidad_X, "Y"=Velocidad_Y),
-                Aceleración=data.frame("X"=Aceleración_X,"Y"=Aceleración_Y))
+    Aceleración_Y<-diff(Velocidad_Y)/dt*-1
+    output=list(Desplazamiento=data.frame("AP"=Eje_Y,"ML"=Eje_X),
+                Velocidad=data.frame("AP"=Velocidad_Y,"ML"=Velocidad_X),
+                Aceleración=data.frame("AP"=Aceleración_Y,"ML"=Aceleración_X))
   }
   ) #Aplica función CoP
   names(CoP_xy) <- paste('Sujeto', 1:i, sep = " ")
@@ -80,9 +80,9 @@ CoP<-function(x,freq=40){
   Velocidad_Y<-(diff(Eje_Y)/dt)*-1
   Aceleración_X<-diff(Velocidad_X)/dt
   Aceleración_Y<-(diff(Velocidad_Y)/dt)*-1
-  output=list(Desplazamiento=data.frame("ML"=Eje_X,"AP"=Eje_Y),
-              Velocidad=data.frame("ML"=Velocidad_X, "AP"=Velocidad_Y),
-              Aceleración=data.frame("ML"=Aceleración_X,"AP"=Aceleración_Y))
+  output=list(Desplazamiento=data.frame("AP"=Eje_Y,"ML"=Eje_X),
+              Velocidad=data.frame("AP"=Velocidad_Y,"ML"=Velocidad_X),
+              Aceleración=data.frame("AP"=Aceleración_Y,"ML"=Aceleración_X))
 }
 lllaply_p<-function(x,m=c(3,2),f=40,col.main="blue",type="l",...){
   if(!is.null(m))
