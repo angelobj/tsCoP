@@ -254,22 +254,3 @@ save.excel <-function(.list, default = 'var1', path = ''){
   writeWorksheet(wb,.list, names(.list),header=FALSE)
   saveWorkbook(wb)
 }
-
-#par<-matrix(unlist(d_par),ncol=33)
-#rownames par
-#rownames(par)<-paste(paste(rep(c('Desplazamiento','Velocidad','Aceleracion'),each=6),rep(c('X','Y'),each=3)),c('d','sd.as','sd.reg'))
-#colnames(par)<-c(paste('Sujeto', 1:33, sep = " "))
-#d<-matrix(NA,ncol=33,nrow=6)
-#pos<-seq(from=1,to=18,by=3)
-#for(i in 1:6){
-#d[i,]<-par[pos[i],]
-#}
-#d<-t(d)
-descriptivo<-function(x){
-Media<-apply(x,mean,MARGIN=2)
-Desv.E<-apply(x,sd,MARGIN=2)
-Var<-apply(x,var,MARGIN=2)
-Shapiro<-apply(x,function(x)(shapiro.test(x)$p.value),MARGIN=2)
-KS.test<-apply(x,function(x)(ks.test(x,"pnorm",mean(x),sd(x))$p.value),MARGIN=2)
-t(data.frame("Media"=Media,"Desviacion E."=Desv.E,"Var"=Var,"Shapiro W"=Shapiro,"KS"=KS.test))
-#}
