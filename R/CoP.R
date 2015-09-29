@@ -269,7 +269,7 @@ descriptivo<-function(x){
 Media<-apply(x,mean,MARGIN=2)
 Desv.E<-apply(x,sd,MARGIN=2)
 Var<-apply(x,var,MARGIN=2)
-#Shapiro<-apply(x,function(x)(shapiro.test(x)$p.value),MARGIN=2)
-#KS.test<-apply(x,function(x)(ks.test(x,"pnorm",mean(x),sd(x))$p.value),MARGIN=2)
-#t(data.frame("Media"=Media,"Desviacion E."=Desv.E,"Var"=Var,"Shapiro W"=Shapiro,"KS"=KS.test))
+Shapiro<-apply(x,function(x)(shapiro.test(x)$p.value),MARGIN=2)
+KS.test<-apply(x,function(x)(ks.test(x,"pnorm",mean(x),sd(x))$p.value),MARGIN=2)
+t(data.frame("Media"=Media,"Desviacion E."=Desv.E,"Var"=Var,"Shapiro W"=Shapiro,"KS"=KS.test))
 #}
