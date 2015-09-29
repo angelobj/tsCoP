@@ -149,59 +149,57 @@ cortar<-function(x,i=0,f=0,freq=1,r.na=F){
   if(missing(freq))
     warning("Frecuencia por defecto son 1hz")
   if(r.na==F){
-  if(is.data.frame(x)){
-    if(!missing(i)){
-      if(!missing(f)){
-        x[-c(1:(i*freq),(dim(x)[1]-(f*freq)+1):(dim(x)[1])),n]} # con esta linea elimino valores
-      }else
-      {x[-c(1:(i*freq)),]}#missing(f)
-    }#missnig(i)
-    else{x[-c((dim(x)[1]-(f*freq)+1):(dim(x)[1])),]}}#data.frame1
-  else{
-    if(!missing(i)){
-      if(!missing(f)){
-        x[-c(1:(i*freq),(length(x)-(f*freq)+1):(length(x)))]
-      }else
-      {x[-c(1:(i*freq))]}#mmissing(i)
-    }
-    else{x[-c((length(x)-(f*freq)+1):(length(x)))]}#missing(i)
-  }#data.frame2
-  
-  }#ra.na1
-  else{
     if(is.data.frame(x)){
       if(!missing(i)){
         if(!missing(f)){
-          inicio<-rep(NA,times=i*freq)
-          fin<-rep(NA,times=f*freq)
-          c(inicio,x[c((i*freq)+1):(dim(x)[1]-(f*freq)),],fin) # Con esta linea relleno con NA
-          }else
-        {
-        inicio<-rep(NA,times=i*freq)
-        c(inicio,x[c((i*freq)+1):(dim(x)[1]-(f*freq)),]) # Con esta linea relleno con NA    
-        }#missing(f)
-      }#missnig(i)
-      else{
-        fin<-rep(NA,times=f*freq)
-        c(x[c((i*freq)+1):(dim(x)[1]-(f*freq)),],fin) # Con esta linea relleno con NA
-      }}#data.frame1
+          x[-c(1:(i*freq),(dim(x)[1]-(f*freq)+1):(dim(x)[1])),n]}
+          else
+          {x[-c(1:(i*freq)),]}
+      }
+      else{x[-c((dim(x)[1]-(f*freq)+1):(dim(x)[1])),]}}
     else{
       if(!missing(i)){
         if(!missing(f)){
-          inicio<-rep(NA,times=i*freq)
-          fin<-rep(NA,times=f*freq)
-          c(inicio,x[c((i*freq)+1):(length(x)-(f*freq))],fin) # Con esta linea relleno con NA
-        }else
-        {
-          inicio<-rep(NA,times=i*freq)
-          c(inicio,x[c((i*freq)+1):(length(x)-(f*freq))]) # Con esta linea relleno con NA    
-        }#missing(f)
-      }#missnig(i)
-      else{
+        x[-c(1:(i*freq),(length(x)-(f*freq)+1):(length(x)))]}
+        else
+        {x[-c(1:(i*freq))]}}
+  else{x[-c((length(x)-(f*freq)+1):(length(x)))]}}}
+
+#ra.na1
+else{
+  if(is.data.frame(x)){
+    if(!missing(i)){
+      if(!missing(f)){
+        inicio<-rep(NA,times=i*freq)
         fin<-rep(NA,times=f*freq)
-        c(x[c((i*freq)+1):(length(x)-(f*freq))],fin) # Con esta linea relleno con NA
-      }}#data.frame2
-    }#ra.na2
+        c(inicio,x[c((i*freq)+1):(dim(x)[1]-(f*freq)),],fin) # Con esta linea relleno con NA
+      }else
+      {
+        inicio<-rep(NA,times=i*freq)
+        c(inicio,x[c((i*freq)+1):(dim(x)[1]-(f*freq)),]) # Con esta linea relleno con NA    
+      }#missing(f)
+    }#missnig(i)
+    else{
+      fin<-rep(NA,times=f*freq)
+      c(x[c((i*freq)+1):(dim(x)[1]-(f*freq)),],fin) # Con esta linea relleno con NA
+    }}#data.frame1
+  else{
+    if(!missing(i)){
+      if(!missing(f)){
+        inicio<-rep(NA,times=i*freq)
+        fin<-rep(NA,times=f*freq)
+        c(inicio,x[c((i*freq)+1):(length(x)-(f*freq))],fin) # Con esta linea relleno con NA
+      }else
+      {
+        inicio<-rep(NA,times=i*freq)
+        c(inicio,x[c((i*freq)+1):(length(x)-(f*freq))]) # Con esta linea relleno con NA    
+      }#missing(f)
+    }#missnig(i)
+    else{
+      fin<-rep(NA,times=f*freq)
+      c(x[c((i*freq)+1):(length(x)-(f*freq))],fin) # Con esta linea relleno con NA
+    }}#data.frame2
+}#ra.na2
 }#function
 
 # Extraer información desde modelo ajustado (residuos, coef...) luego aplicar Normalidad, ACF, PACF, etc...
