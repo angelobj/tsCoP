@@ -202,6 +202,10 @@ else{
 }#ra.na2
 }#function
 
+sig.fracdiff<-function(x){
+  (1-pnorm(abs(unlist(x[c('d','ar','ma')])/
+                 unlist(sqrt(diag(x$covariance.dpq))))))*2}
+
 # Extraer información desde modelo ajustado (residuos, coef...) luego aplicar Normalidad, ACF, PACF, etc...
 # res_d<-lllaply(par_d,FUN=acf,fun="acf")
 # coef = do.call("rbind", sapply(names(par_d), USE.NAMES = TRUE,simplify=T,
