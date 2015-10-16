@@ -216,6 +216,9 @@ sig.arima<-function(x){
   (1-pnorm(abs(unlist(x$coef)/
                  unlist(sqrt(diag(x$var.coef))))))*2}
 
+count.p<-function(x){
+  suma<-sum(x$acf>=qnorm((1 + 0.95)/2)/sqrt(x$n.used))
+  }
 # Extraer información desde modelo ajustado (residuos, coef...) luego aplicar Normalidad, ACF, PACF, etc...
 # res_d<-lllaply(par_d,FUN=acf,fun="acf")
 # coef = do.call("rbind", sapply(names(par_d), USE.NAMES = TRUE,simplify=T,
