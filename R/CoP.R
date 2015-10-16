@@ -137,11 +137,17 @@ lllaply_frac<-function(x,nar,nma){
       sapply(names(x[[i]][[d]]),USE.NAMES = TRUE,simplify=FALSE ,function(e){
         fracdiff(x[[i]][[d]][[e]],nar,nma)})))))}
 
-lllaply_arima<-function(x,order){
-  sapply(names(x),USE.NAMES = TRUE,simplify=FALSE,function(i)(
-    sapply(names(x[[i]]),USE.NAMES = TRUE,simplify=FALSE, function(d)(
-      sapply(names(x[[i]][[d]]),USE.NAMES = TRUE,simplify=FALSE ,function(e){
-        arima(x[[i]][[d]][[e]],order)})))))}
+lllaply_frac<-function (x, nar, nma,...) {
+  sapply(names(x), USE.NAMES = TRUE, simplify = FALSE, function(i) (
+    sapply(names(x[[i]]), USE.NAMES = TRUE, simplify = FALSE, function(d) (
+      sapply(names(x[[i]][[d]]),USE.NAMES = TRUE, simplify = FALSE, function(e) {
+        fracdiff(x[[i]][[d]][[e]], nar, nma)})))))}
+
+lllaply_arima<-function (x, order,...){
+  sapply(names(x), USE.NAMES = TRUE, simplify = FALSE, function(i) 
+    (sapply(names(x[[i]]), USE.NAMES = TRUE, simplify = FALSE, function(d) 
+      (sapply(names(x[[i]][[d]]), USE.NAMES = TRUE, simplify = FALSE, function(e) {
+        arima(x[[i]][[d]][[e]],order,...)})))))}
 
 cortar<-function(x,i=0,f=0,freq=1,r.na=F){
   if(missing(i)&&missing(f))
@@ -205,6 +211,10 @@ else{
 sig.fracdiff<-function(x){
   (1-pnorm(abs(unlist(x[c('d','ar','ma')])/
                  unlist(sqrt(diag(x$covariance.dpq))))))*2}
+
+sig.arima<-function(x){
+  (1-pnorm(abs(unlist(x$coef)/
+                 unlist(sqrt(diag(x$var.coef))))))*2}
 
 # Extraer información desde modelo ajustado (residuos, coef...) luego aplicar Normalidad, ACF, PACF, etc...
 # res_d<-lllaply(par_d,FUN=acf,fun="acf")
