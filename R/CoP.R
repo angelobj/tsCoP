@@ -12,7 +12,7 @@
 #' Función 'cortar' elimina o reemplaza datos al comienzo y al final. Se debe ingresar el número de puntos o
 #' el tiempo en segundos si se entrega la frecuencia de muestro
 
-cargar<-function(i=1){
+cargar.ao<-function(i=1){
   if(is.null(i))
     warning("Se cargará el primer archivo de la carpeta")
   archivos <-list.files()
@@ -28,7 +28,7 @@ cargar<-function(i=1){
   }}
 
 
-cargar_tot<-function(i=1,freq=40){
+cargar_tot.ao<-function(i=1,freq=40){
   if(missing(i))
     warning("Se cargará el primer archivo de la carpeta")
   if(missing(freq))
@@ -67,7 +67,7 @@ cargar_tot<-function(i=1,freq=40){
   names(CoP_xy) <- paste('Sujeto', 1:i, sep = " ")
   output=CoP_xy
 }}
-CoP<-function(x,freq=40){
+CoP.ao<-function(x,freq=40){
   if(missing(freq))
     warning("Se utiliza una frecuencia de 40 hz para calcular derivadas")
   dt=1/freq
@@ -270,4 +270,97 @@ save.excel <-function(.list, default = 'var1', path = ''){
   createSheet(wb, names(.list))
   writeWorksheet(wb,.list, names(.list),header=FALSE)
   saveWorkbook(wb)
+}
+
+cargar<-function (i = 1, freq = 100,col.names=NULL,header=F,...) 
+{
+  if (missing(i)) 
+    warning("Se cargará el primer archivo de la carpeta")
+  if (missing(freq)) 
+    warning("Se utiliza una frecuencia de 100 hz para calcular derivadas")
+  archivos <- list.files()
+  if (is.null(i)) {
+    dat <- sapply(archivos, function(x){read.table(x,header=header,...)},
+                  USE.NAMES = TRUE,simplify=FALSE)
+  nombre<-lapply(strsplit(names(dat),"\\."), function(x) paste(x[1:(length(x)-1)], collapse="."))#    lappl
+  names(dat)<-nombre}
+  else {
+    dat <- sapply(archivos[1:i], function(x){read.table(x,header=header,...)},
+                  USE.NAMES = TRUE,simplify=FALSE)  
+    nombre<-lapply(strsplit(names(dat),"\\."), function(x) paste(x[1:(length(x)-1)], collapse="."))#    lappl
+    names(dat)<-nombre}
+  if (!is.null(col.names)&&header==F) {
+    dat<-lapply(dat,function(x){names(x)<-col.names
+                                return(x)})
+
+    }else{return(dat)}
+  dat<-append(dat,list("Sampling"=(data.frame(freq,dt = 1/freq))))
+}
+
+d.t<-function(x,d=1,cols=NULL){
+  if((d>=3)||(d<=0))
+    stop("Solo se pueden realizarán las 2 primeras derivadas")
+  n<-length(x)
+  if(missing(cols))
+{
+  dx.dt<-sapply(x[1:(n-1)],USE.NAMES = TRUE,simplify=FALSE, function(i) {apply(i,function(j){diff(j)/(x[["Sampling"]]$dt)},MARGIN=2)})
+  if(d==1){
+    return(list(Vel=dx.dt))}
+  else
+  {vx.dt<-sapply(x[1:(n-1)],USE.NAMES = TRUE,simplify=FALSE, function(i){apply(i,function(j){diff(j,differences=2)/(x[["Sampling"]]$dt)},MARGIN=2)})}
+  return(list(Vel=dx.dt,Acc=vx.dt))}
+else
+{
+  dx.dt<-sapply(x[1:(n-1)],USE.NAMES = TRUE,simplify=FALSE, function(i) {apply(i[cols],function(j){diff(j)/(x[["Sampling"]]$dt)},MARGIN=2)})
+  if(d==1){
+    return(list(Vel=dx.dt))}
+  else
+  {vx.dt<-sapply(x[1:(n-1)],USE.NAMES = TRUE,simplify=FALSE, function(i) {apply(i[cols],function(j){diff(j,differences=2)/(x[["Sampling"]]$dt)},MARGIN=2)})}
+  return(list(Vel=dx.dt,Acc=vx.dt))}
+}
+
+# Cálculo del Área del Centro de Presión.
+area<-function(x,y){
+#cov_mat<-lapply(CoP_xy,function(x) lapply(x,FUN=cov)$Desplazamiento)
+cov_mat<-(cov(cbind(x,y)))
+#autov<-lapply(cov_mat, function(x){eigen(x)$values})
+autov<-(eigen(cov_mat))$values
+#area<-lapply(autov, function(x){(pi*prod(2.4478*sqrt(x)))})
+area<-(pi*prod(2.4478*sqrt(autov)))
+area<-pi*r^2
+r<-sqrt(area/pi)#?
+return(area)
+}
+
+# Función para graficar área del CoP
+plot.a<-function(x,y,...){
+a<-area(x,y)
+r<-sqrt(a/pi)#?
+theta <- seq(0, 2 * pi, length = 200)
+xlim=c(min(((r * cos(theta))+mean(x)),x),max(((r * cos(theta))+mean(x)),x))
+ylim=c(min(((r * sin(theta))+mean(y)),y),max(((r * sin(theta))+mean(y)),y))
+plot(x,y,type="l",
+     xlim=xlim,ylim=ylim,...)
+lines(x = (r * cos(theta))+mean(CoPx), y = (r * sin(theta))+mean(CoPy),col="red")
+}
+
+# Función para el FFT
+fft.<-function(x,samplingRate){
+  library(tuneR)
+  n <- length(x)
+  p <- fft(x)
+  nUniquePts <- ceiling((n+1)/2)
+  p <- p[1:nUniquePts] #select just the first half since the second half  is a mirror image of the first
+  p <- abs(p)  #take the absolute value, or the magnitude 
+  p <- p / n #scale by the number of points so that the magnitude does not depend on the length of the signal or on its sampling frequency  
+  p <- p^2  # square it to get the power 
+  # multiply by two (see technical document for details)
+  # odd nfft excludes Nyquist point
+  if (n %% 2 > 0){
+    p[2:length(p)] <- p[2:length(p)]*2 # we've got odd number of points fft
+  } else {
+    p[2: (length(p) -1)] <- p[2: (length(p) -1)]*2 # we've got even number of points fft
+  }
+  freqArray <- (0:(nUniquePts-1)) * (as.numeric(samplingRate) / n) #  create the frequency array 
+  plot(freqArray, p, type='l', col='black', xlab='Frequency (Hz)', ylab='Power',xlim=c(0,10),ylim=c(0,max(p[10:4000])))
 }
