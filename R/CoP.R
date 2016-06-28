@@ -1,8 +1,8 @@
-#' Un script para analizar el Centro de Presión desde Cero
+#' Un script para analizar el Centro de Presión desde Cero. Las funciones .ao son para Artoficio
 #'
 #' Se aplican funciones a listas dentro de listas
-#' Función 'cargar' permite cargar todos los archivos dentro de una carpeta (1º nivel)
-#' Función 'CoP' permite calcular el desplazamiento, velocidad y Aceleración (2º nivel), en ejes X e Y.
+#' Función 'cargar.ao' permite cargar todos los archivos dentro de una carpeta (1º nivel)
+#' Función 'CoP.ao' permite calcular el desplazamiento, velocidad y Aceleración (2º nivel), en ejes X e Y.
 #' Función 'lllaply_p' permite graficar todos los niveles en una matriz m=c(3x2)
 #' Función 'lllaply' permite aplicar FUN=fun al 3º nivel de la lista. Argumento 'plot'
 #' permite graficar y guardar archivo '.EPS' donde el título y nombre de archivo comienza con fun="". ACF por defecto,
@@ -10,7 +10,7 @@
 #' Función 'lllaply_d' permite diferenciar en base a parámetros de diferenciación 'd_par' obtenidos con función lllaply(x,fdGPH)
 #' Función 'lllaply_frac' permite obtener parámetros AR y MA
 #' Función 'cortar' elimina o reemplaza datos al comienzo y al final. Se debe ingresar el número de puntos o
-#' el tiempo en segundos si se entrega la frecuencia de muestro
+#' el tiempo en segundos si se entrega la frecuencia de muestreo.
 
 cargar.ao<-function(i=1){
   if(is.null(i))
